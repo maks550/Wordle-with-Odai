@@ -73,7 +73,8 @@
     }
     .green { background-color: #6aaa64 !important; color: white; }
     .yellow { background-color: #c9b458 !important; color: white; }
-    .gray { background-color: #787c7e !important; color: white; }
+    .gray { background-color: #a6a6a6 !important; color: white; }
+    .dark-gray { background-color: #787c7e !important; color: white; }
 
     .attempts {
       max-height: 160px;
@@ -100,6 +101,39 @@
       font-size: 14px;
       color: #777;
     }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 24px;
+      text-align: center;
+    }
+
+    .modal-content {
+      background-color: #333;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .modal button {
+      padding: 10px;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 18px;
+    }
   </style>
 </head>
 <body>
@@ -113,6 +147,7 @@
   </div>
 
   <div class="container" id="game-container" style="display:none;">
+    <div id="level-display">Рівень: 1/50</div>
     <div id="input-grid"></div>
 
     <div class="attempts" id="attempts"></div>
@@ -128,11 +163,36 @@
     <div class="developer">Розробник: Максим Ткачук</div>
   </div>
 
+  <div class="modal" id="loss-modal">
+    <div class="modal-content">
+      <p>Жаль, ви програли. Почніть ще раз.</p>
+      <button onclick="startNewGame()">ОК</button>
+    </div>
+  </div>
+
   <script>
     const words = {
-      easy: ["МІСТО", "КНИГА", "НОТА"],
-      medium: ["ГІТАР", "ПАРТА", "КОРДО"],
-      hard: ["ЩАСТЯ", "КРИГА", "ЗРАДА"]
+      easy: [
+        "КНИГА", "ЗІРКА", "ЛІСОК", "МІСТО", "ГРУША", "РІЧКА", "СВІТЛО", "ЗАЄЦЬ", "СТІЛО", "КОТИК",
+        "МЕДИК", "ТРАВА", "ВІТЕР", "ЛАМПА", "НОТКА", "ПАЛАЦ", "ПАРТА", "ПИЛОК", "КОЛОС", "СМЕРЧ",
+        "ВІЗОК", "ЛОЖКА", "ГІРКА", "БАНАН", "ФОРМА", "ЗНАЧОК", "ДІМЧИК", "СТУКІТ", "ЛИСТОК", "СОНЦЕ",
+        "ТІНЬКИ", "ЗУБРИК", "РОМАШ", "ПЛОМІН", "ХМАРА", "МОСТИ", "ВІКНО", "ВУАЛЯ", "ТІСТО", "ЗРІЗИ",
+        "ГАРБУЗ", "ДРУГИ", "КАРТА", "СІЛЬС", "МОРЕЦ", "БІЖУН", "ЖАБКА", "ГРИЦЬ", "БІЛКА", "ЗВУКИ"
+      ],
+      medium: [
+        "ПИЛКА", "ТЕМНА", "ЛІНИЯ", "КАРМА", "ТЮЛЬП", "СТОКИ", "ГРАНЬ", "МАЛЮК", "СХОДИ", "ОСТРІВ",
+        "ПІЦЦА", "ШПИЛЬ", "МОЛОК", "ЛІТОК", "СОБАК", "ЯБЛУК", "ШИФОН", "КУТОК", "ТІЛОК", "СТІЛК",
+        "ГІТАР", "КОРОБ", "РУКАВ", "ПУСТИ", "РІЧНИ", "ДОЩИК", "ВЕРЕС", "ГІРШЕ", "ЖИТОМ", "МІСЦЕ",
+        "ПАРОМ", "МОВАЖ", "ЗРАЗО", "СТРАХ", "ЧОРНИ", "МОВНИ", "СВЯТО", "ГЛУЗД", "ПІРІТ", "СУПЕР",
+        "ЗАКОН", "БЕЗОД", "ХВОРА", "ПОЖЕЖ", "ПРИКР", "КОМОД", "ШЛЯХИ", "ПЕРЕД", "РАНОК", "ЗОШИТ"
+      ],
+      hard: [
+        "ЩАСТЯ", "КРИГА", "ЗРАДА", "ПЕРЕМ", "ДОРОГ", "ВОДОЙ", "ГОРІХ", "БРІЛЛ", "ШПАЛА", "ФІШКА",
+        "ГІРНИ", "СМЕРД", "ТРИВО", "ХОДАК", "КОВАЛ", "ШТУРМ", "БОРЩІ", "СТАВО", "ФОРУМ", "ГНІВНО",
+        "ТІНІСТ", "МЕРЦІ", "ЛЕЖАН", "ЛИШАК", "КОРІН", "ГЛИБИ", "КРУЧА", "ГАРПУ", "СЛИВА", "ПРИЮТ",
+        "КУЗОВ", "ГРЕЦЬ", "ЗМІНА", "ШТРАФ", "БЛИСК", "СТЕПИ", "СТІНА", "МОЗОК", "ЗНІМІ", "ПІЗНО",
+        "ГАЗОН", "КРОКИ", "КУМЕД", "ГОДИН", "ЗОБРА", "ТРАУР", "СТРІЛ", "ГНІЗД", "ПЛАНК", "ГЛЯЦІ"
+      ]
     };
 
     let selectedDifficulty = "easy";
@@ -140,12 +200,14 @@
     let currentAttempt = [];
     let attempts = [];
     let maxAttempts = 6;
+    let level = 1;
     let usedHint = false;
 
     function setDifficulty(difficulty) {
       selectedDifficulty = difficulty;
       document.getElementById('difficulty-choice').style.display = 'none';
       document.getElementById('game-container').style.display = 'block';
+      level = 1;
       startNewGame();
     }
 
@@ -158,6 +220,7 @@
       renderInputGrid();
       renderKeyboard();
       renderAttempts();
+      updateLevelDisplay();
     }
 
     function renderInputGrid() {
@@ -227,11 +290,13 @@
       const guess = currentAttempt.join("");
       const result = [];
       const used = {};
+      const letterStatus = {};
 
       for (let i = 0; i < currentWord.length; i++) {
         if (guess[i] === currentWord[i]) {
           result.push({ letter: guess[i], color: "green" });
           used[i] = true;
+          letterStatus[guess[i]] = "green";
         } else {
           result.push({ letter: guess[i], color: "gray" });
         }
@@ -243,8 +308,14 @@
             if (!used[j] && guess[i] === currentWord[j]) {
               result[i].color = "yellow";
               used[j] = true;
+              if (letterStatus[guess[i]] !== "green") {
+                letterStatus[guess[i]] = "yellow";
+              }
               break;
             }
+          }
+          if (!letterStatus[guess[i]]) {
+            letterStatus[guess[i]] = "gray";
           }
         }
       }
@@ -253,13 +324,43 @@
       currentAttempt = [];
       renderInputGrid();
       renderAttempts();
+      updateKeyboardColors(letterStatus);
 
       if (guess === currentWord) {
-        setTimeout(() => alert("Правильно!"), 100);
+        level++;
+        if (level > 50) {
+          setTimeout(() => alert("Вітаємо! Ви завершили всі рівні!"), 100);
+        } else {
+          setTimeout(() => alert("Правильно! Перехід на наступний рівень."), 100);
+        }
       } else if (attempts.length >= maxAttempts) {
-        setTimeout(() => alert(`Мені жаль, але ви програли. Слово було: ${currentWord}`), 100);
-        setTimeout(startNewGame, 500);
+        document.getElementById('loss-modal').style.display = 'flex';
       }
+    }
+
+    function updateKeyboardColors(statusMap) {
+      const keys = document.querySelectorAll(".key");
+      keys.forEach(key => {
+        const letter = key.textContent;
+        const status = statusMap[letter];
+        if (!status) return;
+
+        if (status === "green") {
+          key.classList.remove("yellow", "gray", "dark-gray");
+          key.classList.add("green");
+        } else if (status === "yellow" && !key.classList.contains("green")) {
+          key.classList.remove("gray", "dark-gray");
+          key.classList.add("yellow");
+        } else if (status === "gray" && !key.classList.contains("green") && !key.classList.contains("yellow")) {
+          key.classList.add("gray");
+        } else if (status === "dark-gray" && !key.classList.contains("green") && !key.classList.contains("yellow")) {
+          key.classList.add("dark-gray");
+        }
+      });
+    }
+
+    function updateLevelDisplay() {
+      document.getElementById("level-display").textContent = `Рівень: ${level}/50`;
     }
 
     function useHint() {
