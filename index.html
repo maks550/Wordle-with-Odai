@@ -166,7 +166,7 @@
   <div class="modal" id="loss-modal">
     <div class="modal-content">
       <p>Жаль, ви програли. Почніть ще раз.</p>
-      <button onclick="startNewGame()">ОК</button>
+      <button onclick="closeModal()">ОК</button>
     </div>
   </div>
 
@@ -368,6 +368,11 @@
       currentAttempt = [currentWord[0]];
       renderInputGrid();
       usedHint = true;
+    }
+
+    function closeModal() {
+      document.getElementById('loss-modal').style.display = 'none';
+      startNewGame();
     }
   </script>
 </body>
