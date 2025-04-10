@@ -1,229 +1,138 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html>
 <head>
-  <meta charset="UTF-8">
   <title>Польсько-українська гра</title>
   <style>
-    body {
+    html, body {
+      height: 100%;
+      margin: 0;
       font-family: Arial, sans-serif;
       text-align: center;
-      padding: 30px;
-      background: #f0f4f8;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: #f5f5f5;
     }
     h1 {
-      margin-bottom: 20px;
-    }
-    #levelSelect button {
-      font-size: 20px;
-      padding: 10px 20px;
-      margin: 10px;
-      cursor: pointer;
-      border: none;
-      border-radius: 8px;
-      background-color: #007bff;
-      color: white;
-      transition: background-color 0.2s;
-    }
-    #levelSelect button:hover {
-      background-color: #0056b3;
-    }
-    .progress {
-      font-size: 20px;
-      margin-bottom: 10px;
+      margin-top: 20px;
     }
     .question {
-      font-size: 26px;
+      font-size: 28px;
       margin-bottom: 20px;
     }
     .option {
       display: block;
       margin: 15px auto;
-      padding: 15px;
-      width: 320px;
-      font-size: 22px;
-      border: 2px solid #aaa;
+      padding: 20px;
+      border: 2px solid #444;
       border-radius: 10px;
       cursor: pointer;
-      transition: background-color 0.2s;
+      width: 90%;
+      max-width: 400px;
+      font-size: 20px;
+      background: #fff;
     }
     .option:hover {
-      background-color: #f0f0f0;
+      background-color: #dceaff;
     }
     .result {
       margin-top: 20px;
       font-size: 22px;
-      min-height: 28px;
+      height: 30px;
     }
-    #finalScreen {
-      margin-top: 30px;
+    .level-select {
+      margin-top: 20px;
     }
-    #finalScreen button {
-      font-size: 22px;
-      padding: 10px 25px;
+    .level-select button {
+      margin: 5px;
+      padding: 15px 25px;
+      font-size: 18px;
       cursor: pointer;
-      border: none;
       border-radius: 8px;
-      background-color: #28a745;
-      color: white;
-      transition: background-color 0.2s;
-    }
-    #finalScreen button:hover {
-      background-color: #218838;
+      border: 1px solid #333;
     }
     #footer {
-      margin-top: 40px;
-      font-size: 18px;
+      position: absolute;
+      bottom: 10px;
+      width: 100%;
+      font-size: 16px;
       color: #555;
+    }
+    .question-counter {
+      font-size: 20px;
+      margin-bottom: 10px;
+      color: #666;
+    }
+    .ok-btn {
+      padding: 15px 25px;
+      font-size: 20px;
+      margin-top: 20px;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
+
   <h1>Переклади з польської на українську</h1>
-  
-  <!-- Вибір рівня -->
-  <div id="levelSelect">
-    <h2>Оберіть рівень:</h2>
-    <button onclick="startGame('A1')">Рівень A1</button>
-    <button onclick="startGame('A2')">Рівень A2</button>
-    <button onclick="startGame('B1')">Рівень B1</button>
-    <button onclick="startGame('B2')">Рівень B2</button>
-    <button onclick="startGame('C1')">Рівень C1</button>
-    <button onclick="startGame('C2')">Рівень C2</button>
+  <div class="level-select" id="level-select">
+    <p>Оберіть рівень:</p>
+    <button onclick="startGame('A1')">A1</button>
+    <button onclick="startGame('A2')">A2</button>
+    <button onclick="startGame('B1')">B1</button>
+    <button onclick="startGame('B2')">B2</button>
+    <button onclick="startGame('C1')">C1</button>
+    <button onclick="startGame('C2')">C2</button>
   </div>
-  
-  <!-- Ігрова частина -->
-  <div id="game" style="display: none;">
-    <div class="progress" id="progress"></div>
+
+  <div id="game" style="display:none;">
+    <div class="question-counter" id="counter"></div>
     <div class="question" id="question"></div>
     <div id="options"></div>
     <div class="result" id="result"></div>
   </div>
-  
-  <!-- Фінальний екран -->
-  <div id="finalScreen" style="display: none;">
-    <div class="result" id="finalMessage"></div>
-    <button onclick="restartGame()">OK</button>
-  </div>
 
-  <!-- Футер з інформацією про розробників -->
-  <div id="footer">
-    Розробники: Максим Ткачук і Лукань Михайло
-  </div>
-  
+  <div id="footer">Розробники: Максим Ткачук і Лукань Михайло</div>
+
   <script>
-    // Об’єкт зі словами за рівнями. Слова складніші з ростом рівня.
-    // Для кожного рівня передбачено 15 слів.
-    const wordLevels = {
-      "A1": {
-        "dom": "дім",
-        "pies": "собака",
-        "mama": "мама",
-        "kot": "кіт",
-        "woda": "вода",
-        "samochód": "автомобіль",
-        "jabłko": "яблуко",
-        "szkoła": "школа",
-        "okno": "вікно",
-        "drzewo": "дерево",
-        "krzesło": "стільце",
-        "stół": "стіл",
-        "piesek": "песик",
-        "kwiat": "квітка",
-        "miasto": "місто"
+    const levels = {
+      A1: {
+        "dom": "дім", "pies": "собака", "mama": "мама", "kot": "кіт", "woda": "вода",
+        "tata": "тато", "dziecko": "дитина", "chleb": "хліб", "ser": "сир", "ryba": "риба",
+        "auto": "авто", "las": "ліс", "słońce": "сонце", "księżyc": "місяць", "droga": "дорога"
       },
-      "A2": {
-        "praca": "робота",
-        "ulica": "вулиця",
-        "jedzenie": "їжа",
-        "napój": "напій",
-        "przyjaciel": "друг",
-        "książka": "книга",
-        "dziecko": "дитина",
-        "rodzina": "сім'я",
-        "okolica": "околиці",
-        "sklep": "магазин",
-        "pogoda": "погода",
-        "dworzec": "вокзал",
-        "kościół": "церква",
-        "most": "міст",
-        "park": "парк"
+      A2: {
+        "szkoła": "школа", "samochód": "автомобіль", "jabłko": "яблуко", "książka": "книга", "okno": "вікно",
+        "drzewo": "дерево", "miasto": "місто", "wieś": "село", "nauczyciel": "вчитель", "uczeń": "учень",
+        "zegar": "годинник", "krzesło": "стілець", "stół": "стіл", "buty": "взуття", "kawa": "кава"
       },
-      "B1": {
-        "zdarzenie": "подія",
-        "przypadek": "випадок",
-        "sytuacja": "ситуація",
-        "rozwiązać": "вирішувати",
-        "odpowiedzialność": "відповідальність",
-        "punktualny": "пунктуальний",
-        "skuteczny": "дієвий",
-        "rozmowa": "розмова",
-        "wyzwanie": "виклик",
-        "umiejętność": "здібність",
-        "przedsiębiorstwo": "підприємство",
-        "społeczeństwo": "суспільство",
-        "inwestycja": "інвестиція",
-        "technologia": "технологія",
-        "zainteresowanie": "цікавість"
+      B1: {
+        "przyjaciel": "друг", "zdrowie": "здоров’я", "małżeństwo": "шлюб", "przedszkole": "дитсадок", "samolot": "літак",
+        "wakacje": "канікули", "pogoda": "погода", "komputer": "комп’ютер", "gazeta": "газета", "telefon": "телефон",
+        "ubranie": "одяг", "kuchnia": "кухня", "pokój": "кімната", "ogród": "сад", "zwierzę": "тварина"
       },
-      "B2": {
-        "przekonanie": "переконання",
-        "argument": "аргумент",
-        "interpretacja": "інтерпретація",
-        "kontrowersyjny": "суперечливий",
-        "administracja": "адміністрація",
-        "ekonomia": "економіка",
-        "filozofia": "філософія",
-        "demokracja": "демократія",
-        "strategia": "стратегія",
-        "komunikacja": "комунікація",
-        "dyplomacja": "дипломатія",
-        "infrastruktura": "інфраструктура",
-        "współpraca": "співпраця",
-        "koncepcja": "концепція",
-        "analiza": "аналіз"
+      B2: {
+        "społeczeństwo": "суспільство", "kultura": "культура", "środowisko": "середовище", "natura": "природа", "polityka": "політика",
+        "historia": "історія", "nauka": "наука", "technologia": "технологія", "ekonomia": "економіка", "biznes": "бізнес",
+        "edukacja": "освіта", "zdarzenie": "подія", "artykuł": "стаття", "rozmowa": "розмова", "pomysł": "ідея"
       },
-      "C1": {
-        "kontemplacja": "роздуми",
-        "imponderabilia": "неозначені деталі",
-        "prestiż": "престиж",
-        "kontekstualny": "контекстуальний",
-        "paradoks": "парадокс",
-        "konsekwencja": "наслідок",
-        "substancja": "субстанція",
-        "aproksymacja": "апроксимація",
-        "percepcja": "сприйняття",
-        "metafora": "метафора",
-        "dialektyka": "діалектика",
-        "reprezentacja": "репрезентація",
-        "konstytucja": "конституція",
-        "krytyka": "критика",
-        "interpretacja": "інтерпретація"
+      C1: {
+        "przedsiębiorstwo": "підприємство", "zastosowanie": "застосування", "konsekwencja": "наслідок", "argumentacja": "аргументація", "interpretacja": "інтерпретація",
+        "komunikacja": "комунікація", "wrażliwość": "чутливість", "świadomość": "свідомість", "złożoność": "складність", "znaczenie": "значення",
+        "zarządzanie": "управління", "negocjacje": "переговори", "zaufanie": "довіра", "wpływ": "вплив", "doświadczenie": "досвід"
       },
-      "C2": {
-        "egzystencja": "існування",
-        "fenomenologia": "феноменологія",
-        "ontologia": "онтологія",
-        "hermeneutyka": "герменевтика",
-        "epistemologia": "епістемологія",
-        "dialektyka": "діалектика",
-        "paradygmat": "парадигма",
-        "subsydia": "субсидії",
-        "autentyczność": "автентичність",
-        "kontrofensywa": "контрнаступ",
-        "kwintesencja": "квінтесенція",
-        "intrygant": "інтриган",
-        "konfliktologia": "конфліктологія",
-        "przenikliwość": "проникливість",
-        "nerwowość": "нервозність"
+      C2: {
+        "uwarunkowanie": "умовність", "przeobrażenie": "перетворення", "refleksja": "роздуми", "rozważanie": "міркування", "niejednoznaczność": "неоднозначність",
+        "wyobraźnia": "уява", "przyswajanie": "засвоєння", "pogląd": "погляд", "światopogląd": "світогляд", "intelekt": "інтелект",
+        "egzystencja": "існування", "konfrontacja": "зіткнення", "paradoks": "парадокс", "subtelność": "тонкість", "wzniosłość": "величність"
       }
     };
 
-    let currentLevelKey = "";
+    let level = "A1";
     let words = [];
+    let keys = [];
     let current = 0;
     let score = 0;
 
-    // Функція для перемішування масиву
     function shuffle(array) {
       for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -231,55 +140,41 @@
       }
     }
 
-    // Функція для старту гри після вибору рівня
-    function startGame(levelKey) {
-      currentLevelKey = levelKey;
-      // Отримуємо 15 слів як масив пар [polish, ukrainian]
-      words = Object.entries(wordLevels[levelKey]);
-      if (words.length > 15) {
-        // Перемішуємо і відбираємо перші 15, якщо більше
-        shuffle(words);
-        words = words.slice(0, 15);
-      } else {
-        shuffle(words);
-      }
+    function startGame(selectedLevel) {
+      level = selectedLevel;
+      keys = Object.keys(levels[level]);
+      shuffle(keys);
       current = 0;
       score = 0;
-      document.getElementById("levelSelect").style.display = "none";
-      document.getElementById("finalScreen").style.display = "none";
+      words = levels[level];
+      document.getElementById("level-select").style.display = "none";
       document.getElementById("game").style.display = "block";
       nextQuestion();
     }
 
-    // Функція для відображення наступного питання
     function nextQuestion() {
-      // Якщо закінчили 15 слів, показуємо фінальний екран
-      if (current >= words.length) {
-        document.getElementById("game").style.display = "none";
-        document.getElementById("finalScreen").style.display = "block";
-        document.getElementById("finalMessage").innerText = 
-          `Гру завершено! Твій результат: ${score} з ${words.length}\nВи молодець, спробуйте ще раз?`;
+      if (current >= 15) {
+        document.getElementById("question").innerText = "Ви молодець!";
+        document.getElementById("options").innerHTML = '<button class="ok-btn" onclick="location.reload()">OK</button>';
+        document.getElementById("counter").innerText = "";
         return;
       }
-      
-      // Оновлюємо індикатор прогресу
-      document.getElementById("progress").innerText = `Слово ${current + 1} / ${words.length}`;
-      
-      const [plWord, uaCorrect] = words[current];
+
+      const plWord = keys[current];
+      const uaCorrect = words[plWord];
       document.getElementById("question").innerText = `Що означає слово "${plWord}"?`;
-      
-      // Формуємо варіанти відповідей
-      const allAnswers = Object.values(wordLevels[currentLevelKey]);
-      let options = [uaCorrect];
+      document.getElementById("counter").innerText = `Слово ${current + 1}/15`;
+
+      const allAnswers = Object.values(words);
+      const options = [uaCorrect];
+
       while (options.length < 4) {
-        const opt = allAnswers[Math.floor(Math.random() * allAnswers.length)];
-        if (!options.includes(opt)) {
-          options.push(opt);
-        }
+        const option = allAnswers[Math.floor(Math.random() * allAnswers.length)];
+        if (!options.includes(option)) options.push(option);
       }
+
       shuffle(options);
-      
-      // Відображення кнопок з варіантами
+
       const optionsDiv = document.getElementById("options");
       optionsDiv.innerHTML = "";
       options.forEach(option => {
@@ -288,25 +183,15 @@
         btn.innerText = option;
         btn.onclick = () => {
           if (option === uaCorrect) {
-            document.getElementById("result").innerText = "Правильно!";
             score++;
-          } else {
-            document.getElementById("result").innerText = "Неправильно!";
           }
           current++;
-          setTimeout(() => {
-            document.getElementById("result").innerText = "";
-            nextQuestion();
-          }, 1500);
+          nextQuestion();
         };
         optionsDiv.appendChild(btn);
       });
-    }
 
-    // Функція для перезапуску гри
-    function restartGame() {
-      document.getElementById("finalScreen").style.display = "none";
-      document.getElementById("levelSelect").style.display = "block";
+      document.getElementById("result").innerText = "";
     }
   </script>
 </body>
