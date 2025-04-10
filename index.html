@@ -45,18 +45,24 @@
     .level-select {
       margin-top: 20px;
       display: flex;
-      flex-direction: column; /* Зроблено вертикальним */
+      flex-direction: column; /* Вертикальне розташування кнопок */
+      align-items: center;
     }
     .level-select button {
-      margin: 10px 0; /* Збільшено відступи між кнопками */
-      padding: 15px 25px;
-      font-size: 18px;
+      margin: 10px 0; /* Відступи між кнопками */
+      padding: 20px 40px;
+      font-size: 20px;
       cursor: pointer;
       border-radius: 8px;
       border: 1px solid #333;
+      background-color: #1e90ff; /* Синій фон для кнопок */
+      color: white;
+    }
+    .level-select button:hover {
+      background-color: #4682b4; /* Трохи темніший синій при наведенні */
     }
     #footer {
-      margin-top: 30px; /* Відступ, щоб інформація не була прямо на виборі рівнів */
+      margin-top: 30px;
       font-size: 16px;
       color: #555;
     }
