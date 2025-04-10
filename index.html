@@ -3,192 +3,175 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>3-рівнева логічна гра</title>
+  <title>English Level Test Game</title>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #c6f0ff, #dcd6f7);
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      height: 100vh;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+      background: #f0f4f8;
     }
     h1 {
-      margin-top: 20px;
+      font-size: 28px;
       color: #333;
-      text-shadow: 1px 1px 2px #aaa;
     }
-    #game {
-      background: #ffffffdd;
-      padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-      width: 90%;
-      max-width: 600px;
-      text-align: center;
+    h2 {
+      margin-top: 20px;
+      color: #444;
     }
-    .question {
-      font-size: 22px;
-      margin-bottom: 10px;
-    }
-    .progress {
+    .level-button {
+      display: inline-block;
+      margin: 10px;
+      padding: 15px 30px;
       font-size: 18px;
-      margin-bottom: 10px;
-      font-weight: bold;
-    }
-    .button {
-      background-color: #007bff;
-      color: white;
-      padding: 12px 16px;
-      margin: 6px auto;
       border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      width: 80%;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .button:hover {
-      background-color: #0056b3;
-    }
-    .next-level-btn {
-      background-color: orange;
+      background: #007bff;
       color: white;
-      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+      min-width: 180px;
     }
-    #hintBtn {
-      background-color: #ffc107;
-      color: black;
-      font-weight: bold;
+    .level-button:hover {
+      background: #0056b3;
     }
-    #hint {
-      margin-top: 10px;
-      font-style: italic;
-      color: #555;
+    .option-button {
+      display: block;
+      margin: 10px auto;
+      padding: 20px;
+      font-size: 22px;
+      border: none;
+      background: #6c757d;  /* нейтральний сірий фон */
+      color: white;
+      border-radius: 12px;
+      cursor: pointer;
+      width: 70%;
+      transition: 0.2s;
     }
-    #result {
-      margin-top: 15px;
-      font-size: 20px;
-      font-weight: bold;
+    .option-button:hover {
+      background: #5a6268;
     }
-    footer {
-      margin-bottom: 10px;
+    #footer {
+      margin-top: 40px;
+      color: #888;
       font-size: 14px;
-      color: #777;
     }
   </style>
 </head>
 <body>
-  <h1>3-рівнева логічна гра</h1>
-  <div id="game">
-    <div class="progress" id="progress"></div>
-    <div class="question" id="question"></div>
-    <div id="answers"></div>
-    <button class="button" id="hintBtn" onclick="showHint()">Підказка (залишилось: <span id="hintsLeft">3</span>)</button>
-    <div id="hint"></div>
-    <div id="result"></div>
-    <button class="button next-level-btn" id="nextLevelBtn" style="display:none;" onclick="goToNextLevel()">Наступний рівень</button>
+  <h1>English Level Test Game</h1>
+  <div id="levelSelect">
+    <h2>Оберіть рівень:</h2>
+    <button class="level-button" onclick="startQuiz('A1')">Рівень A1</button>
+    <button class="level-button" onclick="startQuiz('A2')">Рівень A2</button>
+    <button class="level-button" onclick="startQuiz('B1')">Рівень B1</button>
+    <button class="level-button" onclick="startQuiz('B2')">Рівень B2</button>
+    <button class="level-button" onclick="startQuiz('C1')">Рівень C1</button>
+    <button class="level-button" onclick="startQuiz('C2')">Рівень C2</button>
   </div>
-  <footer>Розробники: Лукань Михайло, Ткачук Максим</footer>
+
+  <div id="quiz" style="display: none;"></div>
+
+  <div id="footer">Розробник: Масьо</div>
 
   <script>
-    const baseQuestions = [
-      ["Що важче: кілограм каменю чи кілограм пір'я?", ["Камінь", "Пір'я", "Однаково"], 3, "Це питання про одиниці вимірювання."],
-      ["Скільки місяців у році мають 28 днів?", ["Один", "Дванадцять", "Лютий"], 2, "Подумай про кожен місяць окремо."],
-      ["Що буде швидше: світло чи звук?", ["Світло", "Звук", "Однаково"], 1, "Пригадуй грозу."],
-      ["Яке число буде наступним: 1, 1, 2, 3, 5, 8, ?", ["13", "11", "10"], 1, "Згадай послідовність Фібоначчі."],
-      ["Що має корінь, але не росте?", ["Слово", "Дерево", "Картопля"], 1, "Це стосується мови."],
-      ["Що можна тримати лише у правій руці?", ["Ліву руку", "Олівець", "Книгу"], 1, "Фізично незручно."],
-      ["Яке слово стає коротшим, коли додаєш до нього літери?", ["Короткий", "Довгий", "Слово"], 1, "Гра слів."],
-      ["Що зменшується, коли його ділиш?", ["Таємниця", "Яблуко", "Гроші"], 1, "Це про інформацію."],
-      ["Що піднімається, але не опускається?", ["Вік", "Куля", "Температура"], 1, "Щороку зростає."],
-      ["Що можна побачити тільки вночі?", ["Зірки", "Місяць", "Темряву"], 1, "Далекі світила."]
-    ];
+    const questions = {
+      A1: [
+        { word: "Mother", correct: "Мати", options: ["Мати", "Батько", "Дитина", "Брат"] },
+        { word: "House", correct: "Будинок", options: ["Будинок", "Машина", "Сад", "Вулиця"] },
+        { word: "Dog", correct: "Собака", options: ["Кіт", "Собака", "Птах", "Риба"] },
+        { word: "Book", correct: "Книга", options: ["Газета", "Книга", "Журнал", "Папір"] },
+        { word: "School", correct: "Школа", options: ["Університет", "Школа", "Коледж", "Бібліотека"] },
+        { word: "Sun", correct: "Сонце", options: ["Місяць", "Сонце", "Зірка", "Небо"] },
+        { word: "Chair", correct: "Стілець", options: ["Стіл", "Стілець", "Ліжко", "Крісло"] },
+        { word: "Pen", correct: "Ручка", options: ["Олівець", "Ручка", "Ластик", "Лінійка"] },
+        { word: "Milk", correct: "Молоко", options: ["Сік", "Кава", "Молоко", "Вода"] },
+        { word: "Red", correct: "Червоний", options: ["Синій", "Зелений", "Жовтий", "Червоний"] }
+      ],
+      A2: [
+        { word: "Afraid", correct: "Наляканий", options: ["Сумний", "Веселий", "Наляканий", "Злий"] },
+        { word: "Answer", correct: "Відповідь", options: ["Питання", "Відповідь", "Тема", "Промова"] },
+        { word: "Clean", correct: "Чистий", options: ["Брудний", "Чистий", "Темний", "Мокрий"] },
+        { word: "Quickly", correct: "Швидко", options: ["Повільно", "Швидко", "Тихо", "Голосно"] },
+        { word: "Cold", correct: "Холодно", options: ["Гаряче", "Тепло", "Холодно", "Сонячно"] }
+      ],
+      B1: [
+        { word: "Assume", correct: "Припускати", options: ["Визнавати", "Пояснювати", "Припускати", "Доводити"] },
+        { word: "Require", correct: "Вимагати", options: ["Пропонувати", "Вимагати", "Допомагати", "Спостерігати"] },
+        { word: "Maintain", correct: "Підтримувати", options: ["Забути", "Підтримувати", "Змінити", "Виправити"] },
+        { word: "Efficient", correct: "Ефективний", options: ["Повільний", "Ефективний", "Надійний", "Шкідливий"] },
+        { word: "Expand", correct: "Розширювати", options: ["Скорочувати", "Розширювати", "Розривати", "Замінювати"] }
+      ],
+      B2: [
+        { word: "Alternative", correct: "Альтернатива", options: ["Ризик", "Альтернатива", "План", "Варіант"] },
+        { word: "Approach", correct: "Підхід", options: ["Атака", "Рішення", "Підхід", "Метод"] },
+        { word: "Contribute", correct: "Сприяти", options: ["Заважати", "Сприяти", "Ігнорувати", "Уникати"] },
+        { word: "Emphasize", correct: "Підкреслювати", options: ["Забути", "Приховати", "Підкреслювати", "Виключати"] },
+        { word: "Obtain", correct: "Отримувати", options: ["Забирати", "Віддавати", "Отримувати", "Позичати"] }
+      ],
+      C1: [
+        { word: "Notwithstanding", correct: "Незважаючи на", options: ["Хоча", "Незважаючи на", "Проте", "Оскільки"] },
+        { word: "Plausible", correct: "Ймовірний", options: ["Неможливий", "Ймовірний", "Надійний", "Сумнівний"] },
+        { word: "Ambiguous", correct: "Двозначний", options: ["Ясний", "Двозначний", "Зрозумілий", "Однозначний"] },
+        { word: "Comprehensive", correct: "Комплексний", options: ["Обмежений", "Комплексний", "Спрощений", "Локальний"] },
+        { word: "Subsequent", correct: "Наступний", options: ["Попередній", "Наступний", "Частковий", "Завершальний"] }
+      ],
+      C2: [
+        { word: "Ephemeral", correct: "Недовговічний", options: ["Вічний", "Недовговічний", "Твердий", "Невидимий"] },
+        { word: "Obfuscate", correct: "Ускладнювати розуміння", options: ["Пояснювати", "Ускладнювати розуміння", "Спростити", "Загладити"] },
+        { word: "Ineffable", correct: "Невимовний", options: ["Пояснюваний", "Невимовний", "Звичайний", "Беззмістовний"] },
+        { word: "Quintessential", correct: "Ідеальний приклад", options: ["Мінімальний", "Випадковий", "Ідеальний приклад", "Середній"] },
+        { word: "Vicissitude", correct: "Зміна", options: ["Стабільність", "Зміна", "Невизначеність", "Неминучість"] }
+      ]
+    };
 
-    const allLevels = [1, 2, 3].map(level => Array.from({length: 20}, (_, i) => {
-      const q = baseQuestions[i % baseQuestions.length];
-      return {
-        question: `Рівень ${level} - ${q[0]}`,
-        options: q[1],
-        correct: q[2],
-        hint: `H: ${q[3]}`
-      };
-    }));
-
-    let currentLevelIndex = 0;
+    let currentLevel;
     let currentQuestionIndex = 0;
-    let score = 0;
-    let hintsLeft = 3;
 
-    function loadQuestion() {
-      const level = allLevels[currentLevelIndex];
-      if (currentQuestionIndex >= level.length) {
-        document.getElementById("question").textContent = `Рівень завершено! Ваш результат: ${score}/${level.length}`;
-        document.getElementById("answers").innerHTML = "";
-        document.getElementById("hint").textContent = "";
-        document.getElementById("hintBtn").style.display = "none";
-        if (currentLevelIndex < allLevels.length - 1) {
-          document.getElementById("nextLevelBtn").style.display = "inline-block";
-        }
+    function startQuiz(level) {
+      currentLevel = level;
+      currentQuestionIndex = 0;
+      document.getElementById('levelSelect').style.display = 'none';
+      showQuestion();
+    }
+
+    function showQuestion() {
+      if (currentQuestionIndex >= questions[currentLevel].length) {
+        alert('Вітаємо! Ви пройшли тест!');
         return;
       }
 
-      const questionData = level[currentQuestionIndex];
-      document.getElementById("progress").textContent = `Питання ${currentQuestionIndex + 1}/${level.length}`;
-      document.getElementById("question").textContent = questionData.question;
-      document.getElementById("hint").textContent = "";
-      document.getElementById("hintBtn").disabled = false;
-      document.getElementById("hintBtn").style.display = "inline-block";
-      document.getElementById("result").textContent = "";
-
-      const answersDiv = document.getElementById("answers");
-      answersDiv.innerHTML = "";
-      questionData.options.forEach((opt, i) => {
-        const btn = document.createElement("button");
-        btn.className = "button";
-        btn.textContent = opt;
-        btn.onclick = () => checkAnswer(i + 1);
-        answersDiv.appendChild(btn);
+      const question = questions[currentLevel][currentQuestionIndex];
+      let optionsHTML = '';
+      question.options.forEach(option => {
+        optionsHTML += `<button class="option-button" onclick="checkAnswer('${option}')">${option}</button>`;
       });
+
+      document.getElementById('quiz').innerHTML = `
+        <h2>Переклад: ${question.word}</h2>
+        <div>${optionsHTML}</div>
+      `;
     }
 
-    function checkAnswer(choice) {
-      const level = allLevels[currentLevelIndex];
-      const correctAnswer = level[currentQuestionIndex].correct;
-      if (choice === correctAnswer) {
-        score++;
-      }
-      currentQuestionIndex++;
-      loadQuestion();
-    }
-
-    function showHint() {
-      if (hintsLeft > 0) {
-        const level = allLevels[currentLevelIndex];
-        const questionData = level[currentQuestionIndex];
-        document.getElementById("hint").textContent = questionData.hint;
-        hintsLeft--;
-        document.getElementById("hintsLeft").textContent = hintsLeft;
-        if (hintsLeft === 0) {
-          document.getElementById("hintBtn").disabled = true;
+    function checkAnswer(selectedAnswer) {
+      const question = questions[currentLevel][currentQuestionIndex];
+      const buttons = document.querySelectorAll('.option-button');
+      
+      buttons.forEach(button => {
+        if (button.textContent === question.correct) {
+          button.style.backgroundColor = '#28a745'; // зелений для правильного
+        } else if (button.textContent === selectedAnswer) {
+          button.style.backgroundColor = '#dc3545'; // червоний для неправильного
+        } else {
+          button.style.backgroundColor = '#6c757d'; // сірий для решти
         }
-      }
-    }
+      });
 
-    function goToNextLevel() {
-      currentLevelIndex++;
-      currentQuestionIndex = 0;
-      score = 0;
-      hintsLeft = 3;
-      document.getElementById("nextLevelBtn").style.display = "none";
-      document.getElementById("hintsLeft").textContent = hintsLeft;
-      loadQuestion();
+      currentQuestionIndex++;
+      setTimeout(() => {
+        showQuestion();
+      }, 1000);
     }
-
-    loadQuestion();
   </script>
 </body>
 </html>
