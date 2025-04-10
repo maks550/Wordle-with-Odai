@@ -12,24 +12,26 @@
       flex-direction: column;
       justify-content: center;
       background: #f5f5f5;
+      overflow: hidden;
     }
     h1 {
       margin-top: 20px;
+      font-size: 36px;
     }
     .question {
-      font-size: 28px;
+      font-size: 36px;
       margin-bottom: 20px;
     }
     .option {
       display: block;
       margin: 15px auto;
-      padding: 20px;
+      padding: 25px;
       border: 2px solid #444;
       border-radius: 10px;
       cursor: pointer;
-      width: 90%;
-      max-width: 400px;
-      font-size: 20px;
+      width: 80%;
+      max-width: 600px;
+      font-size: 24px;
       background: #fff;
     }
     .option:hover {
@@ -37,7 +39,7 @@
     }
     .result {
       margin-top: 20px;
-      font-size: 22px;
+      font-size: 24px;
       height: 30px;
     }
     .level-select {
@@ -45,8 +47,8 @@
     }
     .level-select button {
       margin: 5px;
-      padding: 15px 25px;
-      font-size: 18px;
+      padding: 20px 30px;
+      font-size: 22px;
       cursor: pointer;
       border-radius: 8px;
       border: 1px solid #333;
@@ -59,13 +61,13 @@
       color: #555;
     }
     .question-counter {
-      font-size: 20px;
+      font-size: 24px;
       margin-bottom: 10px;
       color: #666;
     }
     .ok-btn {
-      padding: 15px 25px;
-      font-size: 20px;
+      padding: 20px 30px;
+      font-size: 22px;
       margin-top: 20px;
       cursor: pointer;
     }
@@ -154,7 +156,7 @@
 
     function nextQuestion() {
       if (current >= 15) {
-        document.getElementById("question").innerText = "Ви молодець!";
+        document.getElementById("question").innerText = `Ви молодець! Правильних відповідей: ${score}/15`;
         document.getElementById("options").innerHTML = '<button class="ok-btn" onclick="location.reload()">OK</button>';
         document.getElementById("counter").innerText = "";
         return;
