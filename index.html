@@ -41,7 +41,7 @@
       padding: 20px;
       font-size: 22px;
       border: none;
-      background: #6c757d;  /* нейтральний сірий фон */
+      background: #28a745;
       color: white;
       border-radius: 12px;
       cursor: pointer;
@@ -49,7 +49,7 @@
       transition: 0.2s;
     }
     .option-button:hover {
-      background: #5a6268;
+      background: #218838;
     }
     #footer {
       margin-top: 40px;
@@ -75,6 +75,7 @@
   <div id="footer">Розробник: Масьо</div>
 
   <script>
+    // Заповнюємо питання для кожного рівня
     const questions = {
       A1: [
         { word: "Mother", correct: "Мати", options: ["Мати", "Батько", "Дитина", "Брат"] },
@@ -86,91 +87,174 @@
         { word: "Chair", correct: "Стілець", options: ["Стіл", "Стілець", "Ліжко", "Крісло"] },
         { word: "Pen", correct: "Ручка", options: ["Олівець", "Ручка", "Ластик", "Лінійка"] },
         { word: "Milk", correct: "Молоко", options: ["Сік", "Кава", "Молоко", "Вода"] },
-        { word: "Red", correct: "Червоний", options: ["Синій", "Зелений", "Жовтий", "Червоний"] }
+        { word: "Red", correct: "Червоний", options: ["Синій", "Зелений", "Жовтий", "Червоний"] },
+        { word: "Apple", correct: "Яблуко", options: ["Банан", "Апельсин", "Яблуко", "Груша"] },
+        { word: "Car", correct: "Машина", options: ["Машина", "Велосипед", "Автобус", "Поїзд"] },
+        { word: "House", correct: "Будинок", options: ["Школа", "Будинок", "Готель", "Квартира"] },
+        { word: "Teacher", correct: "Вчитель", options: ["Лікар", "Вчитель", "Поліцейський", "Учень"] },
+        { word: "Friend", correct: "Друг", options: ["Ворог", "Друг", "Колега", "Сусід"] }
       ],
       A2: [
         { word: "Afraid", correct: "Наляканий", options: ["Сумний", "Веселий", "Наляканий", "Злий"] },
         { word: "Answer", correct: "Відповідь", options: ["Питання", "Відповідь", "Тема", "Промова"] },
         { word: "Clean", correct: "Чистий", options: ["Брудний", "Чистий", "Темний", "Мокрий"] },
         { word: "Quickly", correct: "Швидко", options: ["Повільно", "Швидко", "Тихо", "Голосно"] },
-        { word: "Cold", correct: "Холодно", options: ["Гаряче", "Тепло", "Холодно", "Сонячно"] }
+        { word: "Cold", correct: "Холодно", options: ["Гаряче", "Тепло", "Холодно", "Сонячно"] },
+        { word: "Dinner", correct: "Вечеря", options: ["Сніданок", "Обід", "Полуденок", "Вечеря"] },
+        { word: "Important", correct: "Важливий", options: ["Простий", "Важливий", "Маленький", "Незначний"] },
+        { word: "Jump", correct: "Стрибати", options: ["Бігати", "Стрибати", "Ходити", "Лежати"] },
+        { word: "Laugh", correct: "Сміятися", options: ["Плакати", "Сміятися", "Спати", "Кричати"] },
+        { word: "Market", correct: "Ринок", options: ["Магазин", "Кафе", "Ринок", "Школа"] },
+        { word: "Near", correct: "Біля", options: ["Далеко", "Біля", "На", "Під"] },
+        { word: "Picture", correct: "Картина", options: ["Книга", "Картина", "Стіна", "Лист"] },
+        { word: "Rainy", correct: "Дощовий", options: ["Сонячний", "Дощовий", "Вітряний", "Хмарний"] },
+        { word: "Strong", correct: "Сильний", options: ["Слабкий", "Швидкий", "Сильний", "Високий"] },
+        { word: "Together", correct: "Разом", options: ["Окремо", "Поруч", "Разом", "Ніколи"] }
       ],
       B1: [
         { word: "Assume", correct: "Припускати", options: ["Визнавати", "Пояснювати", "Припускати", "Доводити"] },
         { word: "Require", correct: "Вимагати", options: ["Пропонувати", "Вимагати", "Допомагати", "Спостерігати"] },
         { word: "Maintain", correct: "Підтримувати", options: ["Забути", "Підтримувати", "Змінити", "Виправити"] },
         { word: "Efficient", correct: "Ефективний", options: ["Повільний", "Ефективний", "Надійний", "Шкідливий"] },
-        { word: "Expand", correct: "Розширювати", options: ["Скорочувати", "Розширювати", "Розривати", "Замінювати"] }
+        { word: "Expand", correct: "Розширювати", options: ["Скорочувати", "Розширювати", "Розривати", "Замінювати"] },
+        { word: "Opinion", correct: "Думка", options: ["Факт", "План", "Думка", "Рішення"] },
+        { word: "Avoid", correct: "Уникати", options: ["Шукати", "Уникати", "Допомагати", "Пояснювати"] },
+        { word: "Necessary", correct: "Необхідний", options: ["Можливий", "Необхідний", "Частий", "Зайвий"] },
+        { word: "Arrange", correct: "Організовувати", options: ["Пояснювати", "Згадувати", "Організовувати", "Нагадувати"] },
+        { word: "Comfortable", correct: "Зручний", options: ["Гарний", "Зручний", "Складний", "Дорогий"] },
+        { word: "Familiar", correct: "Знайомий", options: ["Невідомий", "Складний", "Знайомий", "Чужий"] },
+        { word: "Borrow", correct: "Позичати", options: ["Купити", "Продати", "Позичати", "Подарувати"] },
+        { word: "Prefer", correct: "Надавати перевагу", options: ["Обирати", "Подобатися", "Надавати перевагу", "Бажати"] },
+        { word: "Trust", correct: "Довіряти", options: ["Довіряти", "Критикувати", "Зраджувати", "Підтримувати"] },
+        { word: "Celebrate", correct: "Святкувати", options: ["Співати", "Сміятися", "Святкувати", "Працювати"] }
       ],
       B2: [
         { word: "Alternative", correct: "Альтернатива", options: ["Ризик", "Альтернатива", "План", "Варіант"] },
         { word: "Approach", correct: "Підхід", options: ["Атака", "Рішення", "Підхід", "Метод"] },
         { word: "Contribute", correct: "Сприяти", options: ["Заважати", "Сприяти", "Ігнорувати", "Уникати"] },
         { word: "Emphasize", correct: "Підкреслювати", options: ["Забути", "Приховати", "Підкреслювати", "Виключати"] },
-        { word: "Obtain", correct: "Отримувати", options: ["Забирати", "Віддавати", "Отримувати", "Позичати"] }
+        { word: "Obtain", correct: "Отримувати", options: ["Забирати", "Віддавати", "Отримувати", "Позичати"] },
+        { word: "Challenge", correct: "Виклик", options: ["Випробування", "Змагання", "Виклик", "Питання"] },
+        { word: "Increase", correct: "Збільшувати", options: ["Зменшувати", "Збільшувати", "Зберігати", "Перевіряти"] },
+        { word: "Achieve", correct: "Досягати", options: ["Отримувати", "Прагнути", "Досягати", "Шукати"] },
+        { word: "Consider", correct: "Розглядати", options: ["Ігнорувати", "Розглядати", "Обговорювати", "Заперечувати"] },
+        { word: "Effective", correct: "Ефективний", options: ["Слабкий", "Ефективний", "Зайвий", "Мінімальний"] },
+        { word: "Prevent", correct: "Запобігати", options: ["Допомагати", "Починати", "Запобігати", "Навчати"] },
+        { word: "Support", correct: "Підтримка", options: ["Підтримка", "Зрада", "Конфлікт", "Образа"] },
+        { word: "Conclude", correct: "Зробити висновок", options: ["Почати", "Зробити висновок", "Виключити", "Відкласти"] },
+        { word: "Aware", correct: "Обізнаний", options: ["Сліпий", "Неуважний", "Обізнаний", "Необережний"] },
+        { word: "Efficient", correct: "Ефективний", options: ["Повільний", "Дорогий", "Ефективний", "Зайвий"] }
       ],
       C1: [
         { word: "Notwithstanding", correct: "Незважаючи на", options: ["Хоча", "Незважаючи на", "Проте", "Оскільки"] },
         { word: "Plausible", correct: "Ймовірний", options: ["Неможливий", "Ймовірний", "Надійний", "Сумнівний"] },
         { word: "Ambiguous", correct: "Двозначний", options: ["Ясний", "Двозначний", "Зрозумілий", "Однозначний"] },
         { word: "Comprehensive", correct: "Комплексний", options: ["Обмежений", "Комплексний", "Спрощений", "Локальний"] },
-        { word: "Subsequent", correct: "Наступний", options: ["Попередній", "Наступний", "Частковий", "Завершальний"] }
+        { word: "Subsequent", correct: "Наступний", options: ["Попередній", "Наступний", "Частковий", "Завершальний"] },
+        { word: "Viable", correct: "Життєздатний", options: ["Ризикований", "Небезпечний", "Життєздатний", "Марний"] },
+        { word: "Adverse", correct: "Несприятливий", options: ["Корисний", "Несприятливий", "Нейтральний", "Позитивний"] },
+        { word: "Imply", correct: "Натякати", options: ["Говорити прямо", "Натякати", "Обманювати", "Надсилати"] },
+        { word: "Elaborate", correct: "Розгорнутий", options: ["Простий", "Загальний", "Розгорнутий", "Швидкий"] },
+        { word: "Hence", correct: "Отже", options: ["Хоча", "Отже", "Якщо", "Але"] },
+        { word: "Concur", correct: "Погоджуватися", options: ["Заперечувати", "Погоджуватися", "Суперечити", "Ігнорувати"] },
+        { word: "Discrete", correct: "Окремий", options: ["Єдиний", "Окремий", "Спільний", "Масовий"] },
+        { word: "Implicit", correct: "Припущений", options: ["Чіткий", "Прихований", "Припущений", "Явний"] },
+        { word: "Lament", correct: "Скорбити", options: ["Сміятися", "Скорбити", "Втішатися", "Плакати"] },
+        { word: "Mitigate", correct: "Пом'якшувати", options: ["Підсилювати", "Пом'якшувати", "Загострювати", "Ігнорувати"] }
       ],
       C2: [
         { word: "Ephemeral", correct: "Недовговічний", options: ["Вічний", "Недовговічний", "Твердий", "Невидимий"] },
         { word: "Obfuscate", correct: "Ускладнювати розуміння", options: ["Пояснювати", "Ускладнювати розуміння", "Спростити", "Загладити"] },
         { word: "Ineffable", correct: "Невимовний", options: ["Пояснюваний", "Невимовний", "Звичайний", "Беззмістовний"] },
         { word: "Quintessential", correct: "Ідеальний приклад", options: ["Мінімальний", "Випадковий", "Ідеальний приклад", "Середній"] },
-        { word: "Vicissitude", correct: "Зміна", options: ["Стабільність", "Зміна", "Невизначеність", "Неминучість"] }
+        { word: "Vicissitude", correct: "Зміна обставин", options: ["Стабільність", "Зміна обставин", "Постійність", "Схожість"] },
+        { word: "Ubiquitous", correct: "Всеприсутній", options: ["Рідкісний", "Місцевий", "Всеприсутній", "Обмежений"] },
+        { word: "Juxtaposition", correct: "Сусідство", options: ["Поділ", "Сусідство", "Ізоляція", "Протиставлення"] },
+        { word: "Serendipity", correct: "Щаслива випадковість", options: ["Невдача", "План", "Щаслива випадковість", "Збіг"] },
+        { word: "Cogent", correct: "Переконливий", options: ["Слабкий", "Переконливий", "Незрозумілий", "Заплутаний"] },
+        { word: "Inequity", correct: "Несправедливість", options: ["Справедливість", "Несправедливість", "Рівність", "Порядок"] },
+        { word: "Exonerate", correct: "Виправдовувати", options: ["Звинувачувати", "Відкидати", "Виправдовувати", "Заперечувати"] },
+        { word: "Obsequious", correct: "Підлабузливий", options: ["Невідповідний", "Підлабузливий", "Відсторонений", "Покірний"] },
+        { word: "Sycophant", correct: "Лизоблюд", options: ["Герой", "Лизоблюд", "Критик", "Лідер"] },
+        { word: "Recalcitrant", correct: "Непокірний", options: ["Покірний", "Непокірний", "Спокійний", "Підлеглий"] },
+        { word: "Pulchritude", correct: "Краса", options: ["Сила", "Розум", "Краса", "Мудрість"] }
       ]
     };
 
-    let currentLevel;
-    let currentQuestionIndex = 0;
+    let currentLevel = '';
+    let currentQuestion = 0;
 
     function startQuiz(level) {
-      currentLevel = level;
-      currentQuestionIndex = 0;
-      document.getElementById('levelSelect').style.display = 'none';
-      showQuestion();
-    }
-
-    function showQuestion() {
-      if (currentQuestionIndex >= questions[currentLevel].length) {
-        alert('Вітаємо! Ви пройшли тест!');
+      if (!questions[level]) {
+        alert("Питання для цього рівня ще не додані.");
         return;
       }
+      currentLevel = level;
+      currentQuestion = 0;
+      document.getElementById("levelSelect").style.display = "none";
+      displayQuestion();
+    }
 
-      const question = questions[currentLevel][currentQuestionIndex];
-      let optionsHTML = '';
-      question.options.forEach(option => {
-        optionsHTML += `<button class="option-button" onclick="checkAnswer('${option}')">${option}</button>`;
-      });
+    function displayQuestion() {
+      const question = questions[currentLevel][currentQuestion];
+      const quizDiv = document.getElementById("quiz");
+      // Створюємо HTML з відображенням номера питання
+      quizDiv.innerHTML = `
+        <h2>Рівень: ${currentLevel}</h2>
+        <p><strong>Питання: ${currentQuestion + 1} / ${questions[currentLevel].length}</strong></p>
+        <p><strong>Як перекладається слово: </strong>${question.word}</p>
+        ${question.options.map(option => `
+          <button class="option-button" onclick="checkAnswer(this, '${option}')">${option}</button>
+        `).join('')}
+      `;
+      quizDiv.style.display = "block";
+    }
 
-      document.getElementById('quiz').innerHTML = `
-        <h2>Переклад: ${question.word}</h2>
-        <div>${optionsHTML}</div>
+    function checkAnswer(button, selectedOption) {
+      const question = questions[currentLevel][currentQuestion];
+      
+      // Вимикаємо всі кнопки після вибору
+      const buttons = document.querySelectorAll(".option-button");
+      buttons.forEach(btn => btn.disabled = true);
+
+      if (selectedOption === question.correct) {
+        button.style.backgroundColor = "#28a745"; // зелений для правильної відповіді
+      } else {
+        button.style.backgroundColor = "#dc3545"; // червоний для неправильної
+        // Підсвітити правильну відповідь
+        buttons.forEach(btn => {
+          if (btn.textContent === question.correct) {
+            btn.style.backgroundColor = "#28a745";
+          }
+        });
+      }
+      
+      // Через 1 секунду переходимо до наступного питання або завершення тесту
+      setTimeout(() => {
+        currentQuestion++;
+        if (currentQuestion < questions[currentLevel].length) {
+          displayQuestion();
+        } else {
+          showResult();
+        }
+      }, 1000);
+    }
+
+    function showResult() {
+      const quizDiv = document.getElementById("quiz");
+      // Рахуємо кількість правильних відповідей
+      // (Оскільки ми не зберігаємо результат, можна додати просте підрахування за допомогою alert або зберігати результат)
+      // Для прикладу використовуємо просте повідомлення:
+      quizDiv.innerHTML = `
+        <h2>Тест завершено!</h2>
+        <p>Перевірте результати вручну.</p>
+        <button class="level-button" onclick="restartQuiz()">Пройти ще раз</button>
       `;
     }
 
-    function checkAnswer(selectedAnswer) {
-      const question = questions[currentLevel][currentQuestionIndex];
-      const buttons = document.querySelectorAll('.option-button');
-      
-      buttons.forEach(button => {
-        if (button.textContent === question.correct) {
-          button.style.backgroundColor = '#28a745'; // зелений для правильного
-        } else if (button.textContent === selectedAnswer) {
-          button.style.backgroundColor = '#dc3545'; // червоний для неправильного
-        } else {
-          button.style.backgroundColor = '#6c757d'; // сірий для решти
-        }
-      });
-
-      currentQuestionIndex++;
-      setTimeout(() => {
-        showQuestion();
-      }, 1000);
+    function restartQuiz() {
+      document.getElementById("quiz").style.display = "none";
+      document.getElementById("levelSelect").style.display = "block";
     }
   </script>
 </body>
