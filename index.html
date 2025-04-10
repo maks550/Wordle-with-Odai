@@ -16,10 +16,10 @@
     }
     h1 {
       margin-top: 20px;
-      font-size: 36px;
+      font-size: 48px; /* Збільшено розмір шрифта */
     }
     .question {
-      font-size: 36px;
+      font-size: 48px; /* Збільшено розмір шрифта */
       margin-bottom: 20px;
     }
     .option {
@@ -31,7 +31,7 @@
       cursor: pointer;
       width: 80%;
       max-width: 600px;
-      font-size: 24px;
+      font-size: 24px; /* Збільшено розмір шрифта */
       background: #fff;
     }
     .option:hover {
@@ -39,7 +39,7 @@
     }
     .result {
       margin-top: 20px;
-      font-size: 24px;
+      font-size: 30px; /* Збільшено розмір шрифта */
       height: 30px;
     }
     .level-select {
@@ -70,6 +70,12 @@
       font-size: 22px;
       margin-top: 20px;
       cursor: pointer;
+    }
+    #game {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      height: 100vh;
     }
   </style>
 </head>
@@ -150,7 +156,7 @@
       score = 0;
       words = levels[level];
       document.getElementById("level-select").style.display = "none";
-      document.getElementById("game").style.display = "block";
+      document.getElementById("game").style.display = "flex";
       nextQuestion();
     }
 
