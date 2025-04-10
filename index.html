@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>12-рівнева логічна гра</title>
+  <title>3-рівнева логічна гра</title>
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -13,238 +13,182 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      justify-content: start;
+      justify-content: space-between;
       height: 100vh;
     }
-
     h1 {
-      margin-top: 30px;
+      margin-top: 20px;
       color: #333;
       text-shadow: 1px 1px 2px #aaa;
     }
-
     #game {
       background: #ffffffdd;
       padding: 30px;
       border-radius: 20px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
       width: 90%;
-      max-width: 500px;
+      max-width: 600px;
       text-align: center;
     }
-
     .question {
       font-size: 22px;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
-
+    .progress {
+      font-size: 18px;
+      margin-bottom: 10px;
+      font-weight: bold;
+    }
     .button {
       background-color: #007bff;
       color: white;
-      padding: 14px 20px;
-      margin: 8px auto;
+      padding: 12px 16px;
+      margin: 6px auto;
       border: none;
-      border-radius: 12px;
-      font-size: 18px;
+      border-radius: 10px;
+      font-size: 16px;
       width: 80%;
       cursor: pointer;
       transition: background 0.3s;
     }
-
     .button:hover {
       background-color: #0056b3;
     }
-
+    .next-level-btn {
+      background-color: orange;
+      color: white;
+      font-weight: bold;
+    }
     #hintBtn {
       background-color: #ffc107;
       color: black;
       font-weight: bold;
     }
-
     #hint {
       margin-top: 10px;
       font-style: italic;
       color: #555;
     }
-
     #result {
       margin-top: 15px;
-      font-weight: bold;
       font-size: 20px;
-      color: #333;
-    }
-
-    #timer {
-      margin-top: 10px;
-      font-size: 18px;
       font-weight: bold;
-      color: #d9534f;
+    }
+    footer {
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #777;
     }
   </style>
 </head>
 <body>
-
-  <h1>12-рівнева гра</h1>
+  <h1>3-рівнева логічна гра</h1>
   <div id="game">
+    <div class="progress" id="progress"></div>
     <div class="question" id="question"></div>
     <div id="answers"></div>
-    <button class="button" id="hintBtn" onclick="showHint()">[H] Підказка</button>
+    <button class="button" id="hintBtn" onclick="showHint()">Підказка (залишилось: <span id="hintsLeft">3</span>)</button>
     <div id="hint"></div>
-    <div id="timer">02:00</div>
     <div id="result"></div>
+    <button class="button next-level-btn" id="nextLevelBtn" style="display:none;" onclick="goToNextLevel()">Наступний рівень</button>
   </div>
+  <footer>Розробники: Лукань Михайло, Ткачук Максим</footer>
 
   <script>
-    const levels = [
-      {
-        question: "Що запалиш першим у темній кімнаті з сірником, свічкою та газовою плитою?",
-        options: ["Сірник", "Свічку"],
-        correct: 1,
-        hint: "Без цього нічого не запалиш."
-      },
-      {
-        question: "Що важче: кілограм заліза чи кілограм пір’я?",
-        options: ["Однаково", "Залізо"],
-        correct: 1,
-        hint: "Кілограм — це завжди кілограм."
-      },
-      {
-        question: "Скільки буде 2 + 2 × 2?",
-        options: ["8", "6", "4"],
-        correct: 2,
-        hint: "Спочатку множення."
-      },
-      {
-        question: "Якого місяця 28 днів?",
-        options: ["Всі", "Лютий"],
-        correct: 1,
-        hint: "Подумай про всі місяці."
-      },
-      {
-        question: "Що має голову і хвіст, але не має тіла?",
-        options: ["Монета", "Змія", "Риба"],
-        correct: 1,
-        hint: "Це щось маленьке і металеве."
-      },
-      {
-        question: "Яке число пропущено в ряду: 1, 3, 6, 10, ?, 21",
-        options: ["14", "15", "16"],
-        correct: 2,
-        hint: "Кожен раз додається на 1 більше."
-      },
-      {
-        question: "Що можна зламати, не торкаючись?",
-        options: ["Обіцянку", "Вікно"],
-        correct: 1,
-        hint: "Це нематеріальна річ."
-      },
-      {
-        question: "Що належить тобі, але інші використовують частіше?",
-        options: ["Ім’я", "Ключ", "Телефон"],
-        correct: 1,
-        hint: "Тобі його дають при народженні."
-      },
-      {
-        question: "Що стає вологим, коли висушує інше?",
-        options: ["Рушник", "Губка", "Сонце"],
-        correct: 1,
-        hint: "Використовується після душу."
-      },
-      {
-        question: "Скільки секунд у 2 годинах?",
-        options: ["7200", "3600", "1800"],
-        correct: 1,
-        hint: "60 × 60 × 2"
-      },
-      {
-        question: "В кімнаті 10 людей. Кожен потискає руку кожному. Скільки всього рукостискань?",
-        options: ["45", "90", "100"],
-        correct: 1,
-        hint: "Формула: n(n-1)/2"
-      },
-      {
-        question: "2 = 6, 3 = 12, 4 = 20, 5 = 30, то 6 = ?",
-        options: ["42", "36", "40"],
-        correct: 1,
-        hint: "Формула: n × (n + 1)"
-      }
+    const baseQuestions = [
+      ["Що важче: кілограм каменю чи кілограм пір'я?", ["Камінь", "Пір'я", "Однаково"], 3, "Це питання про одиниці вимірювання."],
+      ["Скільки місяців у році мають 28 днів?", ["Один", "Дванадцять", "Лютий"], 2, "Подумай про кожен місяць окремо."],
+      ["Що буде швидше: світло чи звук?", ["Світло", "Звук", "Однаково"], 1, "Пригадуй грозу."],
+      ["Яке число буде наступним: 1, 1, 2, 3, 5, 8, ?", ["13", "11", "10"], 1, "Згадай послідовність Фібоначчі."],
+      ["Що має корінь, але не росте?", ["Слово", "Дерево", "Картопля"], 1, "Це стосується мови."],
+      ["Що можна тримати лише у правій руці?", ["Ліву руку", "Олівець", "Книгу"], 1, "Фізично незручно."],
+      ["Яке слово стає коротшим, коли додаєш до нього літери?", ["Короткий", "Довгий", "Слово"], 1, "Гра слів."],
+      ["Що зменшується, коли його ділиш?", ["Таємниця", "Яблуко", "Гроші"], 1, "Це про інформацію."],
+      ["Що піднімається, але не опускається?", ["Вік", "Куля", "Температура"], 1, "Щороку зростає."],
+      ["Що можна побачити тільки вночі?", ["Зірки", "Місяць", "Темряву"], 1, "Далекі світила."]
     ];
 
-    let currentLevel = 0;
-    let hintUsed = false;
-    let timerInterval;
-    let timeLeft = 120;
+    const allLevels = [1, 2, 3].map(level => Array.from({length: 20}, (_, i) => {
+      const q = baseQuestions[i % baseQuestions.length];
+      return {
+        question: `Рівень ${level} - ${q[0]}`,
+        options: q[1],
+        correct: q[2],
+        hint: `H: ${q[3]}`
+      };
+    }));
 
-    function loadLevel() {
-      const level = levels[currentLevel];
-      document.getElementById("question").textContent = level.question;
+    let currentLevelIndex = 0;
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let hintsLeft = 3;
+
+    function loadQuestion() {
+      const level = allLevels[currentLevelIndex];
+      if (currentQuestionIndex >= level.length) {
+        document.getElementById("question").textContent = `Рівень завершено! Ваш результат: ${score}/${level.length}`;
+        document.getElementById("answers").innerHTML = "";
+        document.getElementById("hint").textContent = "";
+        document.getElementById("hintBtn").style.display = "none";
+        if (currentLevelIndex < allLevels.length - 1) {
+          document.getElementById("nextLevelBtn").style.display = "inline-block";
+        }
+        return;
+      }
+
+      const questionData = level[currentQuestionIndex];
+      document.getElementById("progress").textContent = `Питання ${currentQuestionIndex + 1}/${level.length}`;
+      document.getElementById("question").textContent = questionData.question;
       document.getElementById("hint").textContent = "";
-      document.getElementById("result").textContent = "";
       document.getElementById("hintBtn").disabled = false;
-      hintUsed = false;
+      document.getElementById("hintBtn").style.display = "inline-block";
+      document.getElementById("result").textContent = "";
 
       const answersDiv = document.getElementById("answers");
       answersDiv.innerHTML = "";
-      level.options.forEach((opt, i) => {
+      questionData.options.forEach((opt, i) => {
         const btn = document.createElement("button");
         btn.className = "button";
         btn.textContent = opt;
         btn.onclick = () => checkAnswer(i + 1);
         answersDiv.appendChild(btn);
       });
-
-      resetTimer();
     }
 
     function checkAnswer(choice) {
-      const level = levels[currentLevel];
-      if (choice === level.correct) {
-        document.getElementById("result").textContent = "Правильно!";
-        clearInterval(timerInterval);
-        currentLevel++;
-        setTimeout(() => {
-          if (currentLevel < levels.length) {
-            loadLevel();
-          } else {
-            document.getElementById("game").innerHTML = `<h2>Вітаємо! Ви пройшли всі 12 рівнів!</h2>`;
-          }
-        }, 1000);
-      } else {
-        document.getElementById("result").textContent = "Невірно. Спробуйте ще раз.";
+      const level = allLevels[currentLevelIndex];
+      const correctAnswer = level[currentQuestionIndex].correct;
+      if (choice === correctAnswer) {
+        score++;
       }
+      currentQuestionIndex++;
+      loadQuestion();
     }
 
     function showHint() {
-      if (!hintUsed) {
-        document.getElementById("hint").textContent = levels[currentLevel].hint;
-        hintUsed = true;
-        document.getElementById("hintBtn").disabled = true;
+      if (hintsLeft > 0) {
+        const level = allLevels[currentLevelIndex];
+        const questionData = level[currentQuestionIndex];
+        document.getElementById("hint").textContent = questionData.hint;
+        hintsLeft--;
+        document.getElementById("hintsLeft").textContent = hintsLeft;
+        if (hintsLeft === 0) {
+          document.getElementById("hintBtn").disabled = true;
+        }
       }
     }
 
-    function resetTimer() {
-      clearInterval(timerInterval);
-      timeLeft = 120;
-      updateTimer();
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        updateTimer();
-        if (timeLeft <= 0) {
-          clearInterval(timerInterval);
-          document.getElementById("result").textContent = "Час вичерпано! Почніть рівень спочатку.";
-          setTimeout(loadLevel, 2000);
-        }
-      }, 1000);
+    function goToNextLevel() {
+      currentLevelIndex++;
+      currentQuestionIndex = 0;
+      score = 0;
+      hintsLeft = 3;
+      document.getElementById("nextLevelBtn").style.display = "none";
+      document.getElementById("hintsLeft").textContent = hintsLeft;
+      loadQuestion();
     }
 
-    function updateTimer() {
-      const minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
-      const seconds = (timeLeft % 60).toString().padStart(2, '0');
-      document.getElementById("timer").textContent = `${minutes}:${seconds}`;
-    }
-
-    loadLevel();
+    loadQuestion();
   </script>
-
 </body>
 </html>
