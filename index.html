@@ -1,221 +1,129 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Польсько-українська гра</title>
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: Arial, sans-serif;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      background: #f5f5f5;
-    }
-    h1 {
-      margin-top: 20px;
-    }
-    .question {
-      font-size: 28px;
-      margin-bottom: 20px;
-      display: inline-block;
-      text-align: center;
-    }
-    .option {
-      display: block;
-      margin: 15px auto;
-      padding: 20px;
-      border: 2px solid #444;
-      border-radius: 10px;
-      cursor: pointer;
-      width: 90%;
-      max-width: 400px;
-      font-size: 20px;
-      background: #fff;
-    }
-    .option:hover {
-      background-color: #dceaff;
-    }
-    .result {
-      margin-top: 20px;
-      font-size: 22px;
-      height: 30px;
-    }
-    .level-select {
-      margin-top: 20px;
-      display: flex;
-      flex-direction: column; /* Вертикальне розташування кнопок */
-      align-items: center;
-    }
-    .level-select button {
-      margin: 10px 0; /* Відступи між кнопками */
-      padding: 20px 40px;
-      font-size: 20px;
-      cursor: pointer;
-      border-radius: 8px;
-      border: 1px solid #333;
-      background-color: #1e90ff; /* Синій фон для кнопок */
-      color: white;
-    }
-    .level-select button:hover {
-      background-color: #4682b4; /* Трохи темніший синій при наведенні */
-    }
-    #footer {
-      margin-top: 30px;
-      font-size: 16px;
-      color: #555;
-    }
-    .question-counter {
-      font-size: 20px;
-      margin-bottom: 10px;
-      color: #666;
-    }
-    .ok-btn {
-      padding: 15px 25px;
-      font-size: 20px;
-      margin-top: 20px;
-      cursor: pointer;
-    }
-    #game {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-    }
-    .options-container {
-      display: flex;
-      flex-direction: column; /* Вертикальне розташування варіантів */
-      justify-content: center;
-      align-items: center;
-    }
-  </style>
-</head>
-<body>
+import pygame
+import sys
+import random
+import time
 
-  <h1>Переклади з польської на українську</h1>
-  <div class="level-select" id="level-select">
-    <p>Оберіть рівень:</p>
-    <button onclick="startGame('A1')">A1</button>
-    <button onclick="startGame('A2')">A2</button>
-    <button onclick="startGame('B1')">B1</button>
-    <button onclick="startGame('B2')">B2</button>
-    <button onclick="startGame('C1')">C1</button>
-    <button onclick="startGame('C2')">C2</button>
-  </div>
+pygame.init()
 
-  <div id="game" style="display:none;">
-    <div class="question-counter" id="counter"></div>
-    <div class="question" id="question"></div>
-    <div class="options-container" id="options"></div>
-    <div class="result" id="result"></div>
-  </div>
+WIDTH, HEIGHT = pygame.display.Info().current_w, pygame.display.Info().current_h
+TILE_SIZE = 40
+ROWS = HEIGHT // TILE_SIZE
+COLS = WIDTH // TILE_SIZE
 
-  <div id="footer">Розробники: Максим Ткачук і Лукань Михайло</div>
+BLACK = (0, 0, 0)
+YELLOW = (255, 255, 0)
+BLUE = (0, 0, 255)
+WHITE = (255, 255, 255)
 
-  <script>
-    const levels = {
-      A1: {
-        "dom": "дім", "pies": "собака", "mama": "мама", "kot": "кіт", "woda": "вода",
-        "tata": "тато", "dziecko": "дитина", "chleb": "хліб", "ser": "сир", "ryba": "риба",
-        "auto": "авто", "las": "ліс", "słońce": "сонце", "księżyc": "місяць", "droga": "дорога"
-      },
-      A2: {
-        "szkoła": "школа", "samochód": "автомобіль", "jabłko": "яблуко", "książka": "книга", "okno": "вікно",
-        "drzewo": "дерево", "miasto": "місто", "wieś": "село", "nauczyciel": "вчитель", "uczeń": "учень",
-        "zegar": "годинник", "krzesło": "стілець", "stół": "стіл", "buty": "взуття", "kawa": "кава"
-      },
-      B1: {
-        "przyjaciel": "друг", "zdrowie": "здоров’я", "małżeństwo": "шлюб", "przedszkole": "дитсадок", "samolot": "літак",
-        "wakacje": "канікули", "pogoda": "погода", "komputer": "комп’ютер", "gazeta": "газета", "telefon": "телефон",
-        "ubranie": "одяг", "kuchnia": "кухня", "pokój": "кімната", "ogród": "сад", "zwierzę": "тварина"
-      },
-      B2: {
-        "społeczeństwo": "суспільство", "kultura": "культура", "środowisko": "середовище", "natura": "природа", "polityka": "політика",
-        "historia": "історія", "nauka": "наука", "technologia": "технологія", "ekonomia": "економіка", "biznes": "бізнес",
-        "edukacja": "освіта", "zdarzenie": "подія", "artykuł": "стаття", "rozmowa": "розмова", "pomysł": "ідея"
-      },
-      C1: {
-        "przedsiębiorstwo": "підприємство", "zastosowanie": "застосування", "konsekwencja": "наслідок", "argumentacja": "аргументація", "interpretacja": "інтерпретація",
-        "komunikacja": "комунікація", "wrażliwość": "чутливість", "świadomość": "свідомість", "złożoność": "складність", "znaczenie": "значення",
-        "zarządzanie": "управління", "negocjacje": "переговори", "zaufanie": "довіра", "wpływ": "вплив", "doświadczenie": "досвід"
-      },
-      C2: {
-        "uwarunkowanie": "умовність", "przeobrażenie": "перетворення", "refleksja": "роздуми", "rozważanie": "міркування", "niejednoznaczność": "неоднозначність",
-        "wyobraźnia": "уява", "przyswajanie": "засвоєння", "pogląd": "погляд", "światopogląd": "світогляд", "intelekt": "інтелект",
-        "egzystencja": "існування", "konfrontacja": "зіткнення", "paradoks": "парадокс", "subtelność": "тонкість", "wzniosłość": "величність"
-      }
-    };
+screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.FULLSCREEN)
+pygame.display.set_caption("Pacman Clone")
+clock = pygame.time.Clock()
 
-    let level = "A1";
-    let words = [];
-    let keys = [];
-    let current = 0;
-    let score = 0;
+font = pygame.font.SysFont("Arial", 36)
+large_font = pygame.font.SysFont("Arial", 120, bold=True)
 
-    function shuffle(array) {
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-    }
+maze = [[1 if x == 0 or y == 0 or x == COLS - 1 or y == ROWS - 1 else 0 for x in range(COLS)] for y in range(ROWS)]
+for i in range(100):
+    x, y = random.randint(1, COLS - 2), random.randint(1, ROWS - 2)
+    maze[y][x] = 1
 
-    function startGame(selectedLevel) {
-      level = selectedLevel;
-      keys = Object.keys(levels[level]);
-      shuffle(keys);
-      current = 0;
-      score = 0;
-      words = levels[level];
-      document.getElementById("level-select").style.display = "none";
-      document.getElementById("game").style.display = "block";
-      nextQuestion();
-    }
+dots = [(x, y) for y in range(ROWS) for x in range(COLS) if maze[y][x] == 0]
 
-    function nextQuestion() {
-      if (current >= 15) {
-        document.getElementById("question").innerText = `Ви молодець! Правильні відповіді: ${score}/15`;
-        document.getElementById("options").innerHTML = '<button class="ok-btn" onclick="location.reload()">OK</button>';
-        document.getElementById("counter").innerText = "";
-        return;
-      }
+player_x, player_y = 1, 1
+score = 0
+start_game = False
+countdown = 3
 
-      const plWord = keys[current];
-      const uaCorrect = words[plWord];
-      document.getElementById("question").innerText = `Що означає слово "${plWord}"?`;
-      document.getElementById("counter").innerText = `Слово ${current + 1}/15`;
+direction = None
 
-      const allAnswers = Object.values(words);
-      const options = [uaCorrect];
+start_button = pygame.Rect(WIDTH//2 - 100, HEIGHT//2 - 50, 200, 100)
 
-      while (options.length < 4) {
-        const option = allAnswers[Math.floor(Math.random() * allAnswers.length)];
-        if (!options.includes(option)) options.push(option);
-      }
+def draw_maze():
+    for y in range(ROWS):
+        for x in range(COLS):
+            if maze[y][x] == 1:
+                pygame.draw.rect(screen, BLUE, (x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE))
 
-      shuffle(options);
+def draw_dots():
+    for x, y in dots:
+        pygame.draw.circle(screen, WHITE, (x * TILE_SIZE + TILE_SIZE // 2, y * TILE_SIZE + TILE_SIZE // 2), 5)
 
-      const optionsDiv = document.getElementById("options");
-      optionsDiv.innerHTML = "";
-      options.forEach(option => {
-        const btn = document.createElement("div");
-        btn.className = "option";
-        btn.innerText = option;
-        btn.onclick = () => {
-          if (option === uaCorrect) {
-            score++;
-          }
-        
-          current++;
-          nextQuestion();
-        };
-        optionsDiv.appendChild(btn);
-      });
+def draw_player():
+    pygame.draw.circle(screen, YELLOW, (player_x * TILE_SIZE + TILE_SIZE // 2, player_y * TILE_SIZE + TILE_SIZE // 2), TILE_SIZE // 2 - 2)
 
-      document.getElementById("result").innerText = "";
-    }
-  </script>
-</body>
-</html>
+def draw_start_screen():
+    pygame.draw.rect(screen, BLUE, start_button)
+    text = font.render("СТАРТ", True, WHITE)
+    screen.blit(text, (WIDTH//2 - text.get_width()//2, HEIGHT//2 - text.get_height()//2))
+
+def draw_countdown(c):
+    text = large_font.render(str(c), True, WHITE)
+    screen.blit(text, (WIDTH//2 - text.get_width()//2, HEIGHT//2 - text.get_height()//2))
+
+def draw_credits():
+    text1 = font.render("Розробники:", True, WHITE)
+    text2 = font.render("Максим Ткачук і Лукань Михайло", True, WHITE)
+    screen.blit(text1, (WIDTH//2 - text1.get_width()//2, HEIGHT//2 - 40))
+    screen.blit(text2, (WIDTH//2 - text2.get_width()//2, HEIGHT//2 + 10))
+
+running = True
+
+game_end = False
+while running:
+    clock.tick(10)
+    screen.fill(BLACK)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            sys.exit()
+        elif not start_game and event.type == pygame.MOUSEBUTTONDOWN:
+            if start_button.collidepoint(event.pos):
+                for i in range(countdown, 0, -1):
+                    screen.fill(BLACK)
+                    draw_countdown(i)
+                    pygame.display.flip()
+                    time.sleep(1)
+                start_game = True
+        elif start_game and event.type == pygame.FINGERMOTION:
+            dx = event.dx
+            dy = event.dy
+            if abs(dx) > abs(dy):
+                direction = 'left' if dx < 0 else 'right'
+            else:
+                direction = 'up' if dy < 0 else 'down'
+
+    if not start_game:
+        draw_start_screen()
+    elif game_end:
+        draw_credits()
+    else:
+        new_x, new_y = player_x, player_y
+        if direction == 'left':
+            new_x -= 1
+        elif direction == 'right':
+            new_x += 1
+        elif direction == 'up':
+            new_y -= 1
+        elif direction == 'down':
+            new_y += 1
+
+        if maze[new_y][new_x] == 0:
+            player_x, player_y = new_x, new_y
+
+        if (player_x, player_y) in dots:
+            dots.remove((player_x, player_y))
+            score += 1
+
+        if not dots:
+            game_end = True
+
+        draw_maze()
+        draw_dots()
+        draw_player()
+
+        score_text = font.render(f"Score: {score}", True, WHITE)
+        screen.blit(score_text, (10, 10))
+
+    pygame.display.flip()
+                  
